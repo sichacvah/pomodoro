@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Pomodoro</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="workLabel">Work!</string>
+    <string name="restLabel">Rest!</string>
+    <string name="start">Start</string>
+    <string name="stop">Pause</string>
+    <string name="resume">Resume</string>
+    <string name="empty_time">00:00</string>
+
+</resources>
