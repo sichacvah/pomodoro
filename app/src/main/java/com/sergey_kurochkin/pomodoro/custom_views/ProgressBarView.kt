@@ -52,7 +52,6 @@ class ProgressBarView @JvmOverloads constructor(
     var progress = 0F
         set(value) {
             field = value
-
             invalidate()
         }
     private val min = 0

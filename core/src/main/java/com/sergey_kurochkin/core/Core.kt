@@ -4,7 +4,6 @@ import oolong.Dispatch
 import oolong.effect
 import oolong.effect.none
 import oolong.Effect
-import java.time.Duration
 
 
 object PomodoroTimer {
@@ -134,7 +133,7 @@ object PomodoroTimer {
                     is Model.Paused -> {
                         val currentSection = model.currentSection
                         val section = Section.update(childMsg, model.sections[currentSection])
-                        Model.Running(sections = model.sections.updatedAt(currentSection, section), currentSection = model.currentSection) to effect<Msg> { dispatch ->
+                        Model.Running(sections = model.sections.updatedAt(currentSection, section), currentSection = model.currentSection) to effect { dispatch ->
                             Ticker.start { dispatch(Msg.Tick) }
                         }
                     }
@@ -146,7 +145,7 @@ object PomodoroTimer {
                     is Model.Running -> {
                         val currentSection = model.currentSection
                         val section = Section.update(childMsg, model.sections[currentSection])
-                        Model.Paused(model.sections.updatedAt(currentSection, section), model.currentSection) to effect<Msg> {
+                        Model.Paused(model.sections.updatedAt(currentSection, section), model.currentSection) to effect {
                             Ticker.stop()
                         }
                     }
@@ -166,7 +165,7 @@ object PomodoroTimer {
                                     Ticker.stop()
                                 }
                             } else {
-                                Model.Paused(sections = sections, currentSection = currentSectionIndex + 1) to effect<Msg> {
+                                Model.Paused(sections = sections, currentSection = currentSectionIndex + 1) to effect {
                                     Ticker.stop()
                                 }
                             }

@@ -67,6 +67,14 @@ class MainActivity : AppCompatActivity() {
         window.statusBarColor = getColorCompat(id)
     }
 
+    private fun calculateProgressVal(timeLeft: Int, duration: Int): Float = (timeLeft.toFloat() / duration.toFloat()) * 100
+
+    private fun setProgress(props: PomodoroTimer.Props) {
+        val progressVal = calculateProgressVal(props.timeLeft, props.duration)
+        progress.changeProgress(progressVal)
+    }
+
+
     private val render : (PomodoroTimer.Props, Dispatch<PomodoroTimer.Msg>) -> Any? = { props, dispatch ->
         time.text = formatSeconds(props.timeLeft)
         if (props.kind == Section.Model.Kind.WORK) {
@@ -84,11 +92,7 @@ class MainActivity : AppCompatActivity() {
             setStatusBarColor(R.color.green)
         }
 
-        val progressVal = (props.timeLeft.toFloat() / props.duration.toFloat() * 100)
-        Log.d("PROGRESS_VAL", progressVal.toString())
-        if (progress.progress != progressVal) {
-            progress.changeProgress(progressVal)
-        }
+        setProgress(props)
 
         button.text = if (props.model is PomodoroTimer.Model.Running) {
             getString(R.string.stop)
