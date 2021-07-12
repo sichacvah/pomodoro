@@ -1,5 +1,6 @@
 package com.sergey_kurochkin.pomodoro
 
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.util.Log
 import android.view.Window
@@ -7,9 +8,11 @@ import android.view.WindowManager
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.ContextCompat
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.sergey_kurochkin.core.PomodoroTimer
 import com.sergey_kurochkin.core.Section
 import com.sergey_kurochkin.pomodoro.custom_views.ProgressBarView
@@ -36,9 +39,10 @@ class MainActivity : AppCompatActivity() {
 
 
     private val label by lazy { findViewById<AppCompatTextView>(R.id.label) }
-    private val button by lazy { findViewById<AppCompatButton>(R.id.startStopBtn) }
+    private val button by lazy { findViewById<FloatingActionButton>(R.id.button) }
     private val time by lazy { findViewById<AppCompatTextView>(R.id.time) }
     private val progress by lazy { findViewById<ProgressBarView>(R.id.progress) }
+    private val sectionsLabel by lazy { findViewById<AppCompatTextView>(R.id.sections) }
 
     private fun formatWithZero(seconds: Int): String {
         if (seconds < 10) return "0$seconds"
@@ -77,27 +81,35 @@ class MainActivity : AppCompatActivity() {
 
     private val render : (PomodoroTimer.Props, Dispatch<PomodoroTimer.Msg>) -> Any? = { props, dispatch ->
         time.text = formatSeconds(props.timeLeft)
+        val colorRed = getColorCompat(R.color.red)
+        val colorGreen = getColorCompat(R.color.green)
+
+        sectionsLabel.text = "${props.currentSection + 1}/${props.model.sections.size}"
         if (props.kind == Section.Model.Kind.WORK) {
-            progress.changeProgressBarColor(getColorCompat(R.color.red))
-            time.setTextColor(getColorCompat(R.color.red))
-            label.setTextColor(getColorCompat(R.color.red))
+            button.backgroundTintList = AppCompatResources.getColorStateList(this, R.color.red)
+            progress.changeProgressBarColor(colorRed)
+            time.setTextColor(colorRed)
+            label.setTextColor(colorRed)
             label.text = getString(R.string.workLabel)
+            sectionsLabel.setTextColor(colorRed)
             setStatusBarColor(R.color.red)
         }
         if (props.kind == Section.Model.Kind.REST) {
-            progress.changeProgressBarColor(getColorCompat(R.color.green))
-            time.setTextColor(getColorCompat(R.color.green))
-            label.setTextColor(getColorCompat(R.color.green))
+            button.backgroundTintList = AppCompatResources.getColorStateList(this, R.color.green)
+            progress.changeProgressBarColor(colorGreen)
+            time.setTextColor(colorGreen)
+            label.setTextColor(colorGreen)
+            sectionsLabel.setTextColor(colorGreen)
             label.text = getString(R.string.restLabel)
             setStatusBarColor(R.color.green)
         }
 
         setProgress(props)
 
-        button.text = if (props.model is PomodoroTimer.Model.Running) {
-            getString(R.string.stop)
+        if (props.model is PomodoroTimer.Model.Running) {
+            button.setImageResource(R.drawable.outline_pause_24)
         } else {
-            getString(R.string.start)
+            button.setImageResource(R.drawable.outline_play_arrow_24)
         }
         button.setOnClickListener {
             if (props.model is PomodoroTimer.Model.Running) {

@@ -20,6 +20,19 @@
         app:layout_constraintTop_toBottomOf="@+id/label"
         app:progressBarThickness="4dp" />
     <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/sections"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="18dp"
+        android:fontFamily="sans-serif-light"
+        tools:text="1/10"
+        android:textColor="@color/red"
+        android:textSize="28sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/progress" />
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -32,6 +45,7 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
 
 
     <androidx.appcompat.widget.AppCompatTextView
@@ -47,15 +61,18 @@
         app:layout_constraintBottom_toBottomOf="@id/progress"
         app:layout_constraintTop_toTopOf="@id/progress" />
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/startStopBtn"
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="24dp"
-        android:text="@string/start"
+        android:src="@drawable/outline_play_arrow_24"
+        app:backgroundTint="@color/red"
+        app:tint="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

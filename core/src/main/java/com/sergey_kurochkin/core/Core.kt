@@ -8,10 +8,11 @@ import oolong.Effect
 
 object PomodoroTimer {
     sealed class Model {
-        data class Running(val sections : List<Section.Model>, val currentSection : Int) : Model()
-        data class Paused(val sections : List<Section.Model>, val currentSection: Int) : Model()
-        data class Pending(val sections: List<Section.Model>) : Model()
-        data class Finished(val sections: List<Section.Model>) : Model()
+        abstract val sections: List<Section.Model>
+        data class Running(override val sections : List<Section.Model>, val currentSection : Int) : Model()
+        data class Paused(override val sections : List<Section.Model>, val currentSection: Int) : Model()
+        data class Pending(override val sections: List<Section.Model>) : Model()
+        data class Finished(override val sections: List<Section.Model>) : Model()
     }
 
     sealed class Msg {
@@ -34,7 +35,8 @@ object PomodoroTimer {
         val duration: Int,
         val start: (Dispatch<Msg>) -> Unit,
         val pause: (Dispatch<Msg>) -> Unit,
-        val kind : Section.Model.Kind
+        val kind : Section.Model.Kind,
+        val currentSection: Int
     )
 
     private val extractTimeLeft : (Model) -> Int = { model ->
@@ -64,10 +66,19 @@ object PomodoroTimer {
         }
     }
 
+    private val extractSectionIndex : (Model) -> Int = { model ->
+        when (model) {
+            is Model.Running -> model.currentSection
+            is Model.Paused -> model.currentSection
+            is Model.Finished -> 0
+            is Model.Pending -> 0
+        }
+    }
+
     private val extractSection : (Model) -> Section.Model = { model ->
         when (model) {
-            is Model.Running -> model.sections.get(model.currentSection)
-            is Model.Paused -> model.sections.get(model.currentSection)
+            is Model.Running -> model.sections[model.currentSection]
+            is Model.Paused -> model.sections[model.currentSection]
             is Model.Finished -> model.sections.first()
             is Model.Pending -> model.sections.first()
         }
@@ -85,19 +96,20 @@ object PomodoroTimer {
             timeLeft = extractTimeLeft(model),
             duration = extractDuration(model),
             start = { dispatch -> dispatch(Msg.Start) },
-            pause = { dispatch -> dispatch(Msg.Pause) }
+            pause = { dispatch -> dispatch(Msg.Pause) },
+            currentSection = extractSectionIndex(model)
         )
     }
 
-    val defaultSections = listOf<Section.Model>(
+    private val defaultSections = listOf<Section.Model>(
         Section.Model.Idle(
-            meta = Section.Model.Meta(duration = 100, kind = Section.Model.Kind.WORK)
+            meta = Section.Model.Meta(duration = 20, kind = Section.Model.Kind.WORK)
         ),
         Section.Model.Idle(
-            meta = Section.Model.Meta(duration = 50, kind = Section.Model.Kind.REST)
+            meta = Section.Model.Meta(duration = 10, kind = Section.Model.Kind.REST)
         ),
         Section.Model.Idle(
-            meta = Section.Model.Meta(duration = 100, kind = Section.Model.Kind.WORK)
+            meta = Section.Model.Meta(duration = 20, kind = Section.Model.Kind.WORK)
         ),
     )
 
